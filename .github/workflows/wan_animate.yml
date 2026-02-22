@@ -21,7 +21,25 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
+          
+      - name: Debug env presence (no secrets shown)
+        env:
+          GDRIVE_SA_JSON: ${{ secrets.GDRIVE_SA_JSON }}
+          PIC_FOLDER_ID: ${{ secrets.PIC_FOLDER_ID }}
+          REF_FOLDER_ID: ${{ secrets.REF_FOLDER_ID }}
+          OUT_FOLDER_ID: ${{ secrets.OUT_FOLDER_ID }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          python -V
+          echo "PIC_FOLDER_ID set? $([ -n "$PIC_FOLDER_ID" ] && echo yes || echo no)"
+          echo "REF_FOLDER_ID set? $([ -n "$REF_FOLDER_ID" ] && echo yes || echo no)"
+          echo "OUT_FOLDER_ID set? $([ -n "$OUT_FOLDER_ID" ] && echo yes || echo no)"
+          python - << 'PY'
+          import os
+          v=os.environ.get("GDRIVE_SA_JSON","")
+          print("GDRIVE_SA_JSON length:", len(v))
+          PY
+          
       - name: Run automation
         env:
           GDRIVE_SA_JSON: ${{ secrets.GDRIVE_SA_JSON }}
